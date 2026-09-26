@@ -1,0 +1,4 @@
+name: simplicialhott
+include: .
+depend: standard-library
+flags: -WnoUnsupportedIndexedMatch
