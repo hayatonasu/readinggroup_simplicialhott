@@ -4,6 +4,33 @@ module test where
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
+data Σ (A : Set) (B : A → Set) : Set where
+    pair : (a : A) → (b : B a) → Σ A B
+
+first : {A : Set} → { B : A → Set} → Σ A B → A 
+first (pair a b) = a 
+
+second : {A : Set} → { B : A → Set} → (p : Σ A B ) → B (first p) 
+second (pair a b) = b
+
+identity : {A : Set} → A → A
+identity {A} a = a
+
+iscontr : (A : Set) → Set
+iscontr A = Σ A (λ a → ((x : A) → a ≡ x) )
+
+isprop : (A : Set) → Set
+isprop A = (x y : A) → iscontr (x ≡ y)
+
+isset : (A : Set) → Set
+isset A = (x y : A) → isprop (x ≡ y)
+
+app : {A B : Set} → {f : A → B} → {a a' : A} → a ≡ a' → f a ≡ f a'
+app refl = refl
+
+---- The following is what I borrowed from my old repository.
+
+
 -- composition
 -- _∘_ : {A B C : Set} → (B → C) → (A → B) → (A → C)
 -- (g ∘ f ) x = g (f x)
@@ -76,26 +103,5 @@ refl-uniq : {A : Set} {a : A} → (p : a ≡ a) → refl ≡ p
 refl-uniq refl = refl
 -}
 
-data Σ (A : Set) (B : A → Set) : Set where
-    pair : (a : A) → (b : B a) → Σ A B
 
-witΣ : {A : Set} → { B : A → Set} → Σ A B → A 
-witΣ (pair a b) = a 
 
-prfwitΣ : {A : Set} → { B : A → Set} → (p : Σ A B ) → B (witΣ p) 
-prfwitΣ (pair a b) = b
-
-cont : {A : Set} {a : A} → (y : Σ A (λ x → a ≡ x)) → pair a refl ≡ y
-cont (pair a refl) = refl
-
-dist-inv-conc : {A : Set} {x y z : A} (p : x ≡ y) (q : y ≡ z ) → (inv (concat p q )) ≡ (concat (inv q) (inv p))
-dist-inv-conc refl refl = refl
-
--- coproduct type
-data _⊔_ (A : Set) (B : Set) : Set where
-    inl : A → A ⊔ B
-    inr : B → A ⊔ B
-
-copair : {A B X : Set} → (A → X) → (B → X) → (A ⊔ B → X)
-copair f g (inl a) = f a
-copair f g (inr b) = g b
