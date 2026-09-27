@@ -18,3 +18,5 @@ A library for sHoTT can be found [here](https://rzk-lang.github.io/sHoTT/), part
 
 Rzk has an [in-browser playground](https://rzk-lang.github.io/rzk/v0.7.1/playground/), and when you put the raw URL link to the file in our repo, you can see it in your browser. 
 For example, see this https://rzk-lang.github.io/rzk/playground/?snippet_url=https://raw.githubusercontent.com/hayatonasu/readinggroup_simplicialhott/refs/heads/main/Rzkfiles/test.rzk.md.
+
+To get familiar with Rzk, we can play [this game](https://rzk-lang.github.io/warmup-game/)!
