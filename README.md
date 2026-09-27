@@ -11,10 +11,10 @@ We will study [a type theory for synthetic ∞-categories](https://arxiv.org/abs
 ### Agda
 
 
-## Rzk
+### Rzk
 [Rzk](https://rzk-lang.github.io/rzk/en/mkdocs-languages/) is a proof assistant designed specifically for simplicial HoTT.
 
-A library for sHoTT can be found in (https://rzk-lang.github.io/sHoTT/), part of which is simply about HoTT.
+A library for sHoTT can be found [here](https://rzk-lang.github.io/sHoTT/), part of which is simply about HoTT.
 
 Rzk has an [in-browser playground](https://rzk-lang.github.io/rzk/v0.7.1/playground/), and when you put the raw URL link to the file in our repo, you can see it in your browser. 
-For example, see this (https://rzk-lang.github.io/rzk/playground/?snippet_url=https://raw.githubusercontent.com/hayatonasu/readinggroup_simplicialhott/refs/heads/main/Rzkfiles/test.rzk.md).
+For example, see this https://rzk-lang.github.io/rzk/playground/?snippet_url=https://raw.githubusercontent.com/hayatonasu/readinggroup_simplicialhott/refs/heads/main/Rzkfiles/test.rzk.md.
