@@ -1,0 +1,10 @@
+name = "HoTT"
+version = "0.1.0"
+defaultTargets = ["hott"]
+
+[[lean_lib]]
+name = "HoTT"
+
+[[lean_exe]]
+name = "hott"
+root = "Main"
