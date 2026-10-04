@@ -5,7 +5,7 @@ open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
 data Path {A : Set} : A → A → Set₁ where
-  refl : (x : A) → Path {A} x x -- this is how equality is defined in agda. from now on we will use the symbol `≡` typed like "\==" or "\equiv".
+  myRefl : (x : A) → Path {A} x x -- this is how equality is defined in agda. from now on we will use the symbol `≡` typed like "\==" or "\equiv".
 
 
 data Σ (A : Set) (B : A → Set) : Set where
@@ -35,11 +35,32 @@ pathInd motive base p = J motive p base
 
 -- J : {A : Set a} {x : A} (B : (y : A) → x ≡ y → Set b)
 --     {y : A} (p : x ≡ y) → B x refl → B y p
--- J B refl b = b -- This is how path induction is naturally defined in agda
+-- J B refl b = b -- This is how path induction is normally defined in agda.
+-- I think the definition gave here is more intuitive
+
+-- here is an example of proving something using path induction. We have laabeled the motive and the base explicitly, but this is not necessary.
+app1 : {A B : Set} → (f : A → B) → (a a' : A) → a ≡ a' → f a ≡ f a'
+app1 f a a' = pathInd motive base -- the `{a}` in curly braces is included only so that we can refer to it in the definition. It does not need to be provided when using the function `app`.
+  where
+    motive = (λ x _ → f a ≡ f x) -- this is the function that takes x and a proof that a≡x and returns the type f a ≡ f x
+    base = refl -- this is a proof that f a ≡ f a. Of course, this can be proved using reflexivity.
+
+-- It is more common (and more convenient) in agda to write a function that uses pattern matching on the constuctors of the type rather than using a recursor like `pathInd`. Here is an example of this:
+app2 : {A B : Set} (f : A → B) → (a a' : A) → a ≡ a' → f a ≡ f a'
+app2 f a a' refl = ans -- The `refl` here refers to the type constructor of `Path`.
+  where                -- It says, "assume that our element of `a ≡ a'` was constructed by `refl`. Because `refl: a ≡ a`, this presumes that `a` is definitionally equal to `a'`.
+    ans = refl -- Because we assumed that our input was `refl`, we now
+               -- need an element of `f a ≡ f a`. The obvious choice
+               -- for this is `refl : f a ≡ f a`.
+
+-- The fact that `refl` takes in no arguments is a consequence of the
+-- fact that the equality type is defined as the type of paths with one
+-- based point, rather than the type of paths with *no* based point.
 
 
-app : {A B : Set} → {f : A → B} → {a a' : A} → a ≡ a' → f a ≡ f a'
-app refl = refl
+
+
+
 
 ---- The following is what I borrowed from my old repository.
 
@@ -49,6 +70,7 @@ app refl = refl
 -- (g ∘ f ) x = g (f x)
 -- infixr 30 _∘_
 
+-- this is a slightly more complicated composition that allows `g` to be a dependent function.
 _∘_ : {A B : Set} → {C : B → Set} → ((y : B) → C y) → (f : A → B) → ((x : A) → C (f x))
 (g ∘ f ) x = g (f x)
 infixr 30 _∘_
@@ -88,7 +110,7 @@ right-inv refl = refl
 
 -- application
 ap : {A B : Set} (f : A → B) → {x y : A} → x ≡ y → f x ≡ f y
-ap f refl = {!!}
+ap f refl = refl
 
     
 ap-id : {A : Set} {x y : A} (p : x ≡ y) → p ≡ ap (λ x → x) p
