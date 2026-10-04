@@ -1,4 +1,3 @@
-
 module 
 
 universe u v w
@@ -63,6 +62,8 @@ def Path.trans {A:Type u} {a b c : A} : (a =ₚ b)→ (b =ₚ c) → (a=ₚ c) :
   show ∀ pab : (a=ₚ b), (b=ₚc) → (a=ₚc) from @Path.rec _ motive base _ _ -- go back to the definition of Path.rec and see if you can understand what happened here.
 
 notation:max lhs "⊚" rhs => Path.trans lhs rhs -- here we define the notation p ⊚ q to mean the path p concatenated with the path q. this is the same as in rijke's textbook. we use this weird sybol (written as \oo ) because ∘ is already taken by functions. we could overload the namespace but I dont want to. 
+
+-- theorem reflComp {A : Type} {a b : Type} {p : a =ₚ b}: ((Path.refl a) ⊚ p) = p := rfl -- we use the built in type Eq for "definitional equality". Do not use this unless you absolutely have to!
 
 -- similarly we can prove that equality is reflexive, that is:
 def Path.symm {A:Type u} {a b : A} : (a=ₚ b) → (b=ₚa) := 
