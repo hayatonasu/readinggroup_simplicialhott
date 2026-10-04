@@ -70,7 +70,7 @@ app2 f a a' refl = ans -- The `refl` here refers to the type constructor of `Pat
 -- (g ∘ f ) x = g (f x)
 -- infixr 30 _∘_
 
--- this is a slightly more complicated composition that allows `g` to be a dependent function.
+-- This is a slightly more complicated composition that allows `g` to be a dependent function.
 _∘_ : {A B : Set} → {C : B → Set} → ((y : B) → C y) → (f : A → B) → ((x : A) → C (f x))
 (g ∘ f ) x = g (f x)
 infixr 30 _∘_
