@@ -155,3 +155,43 @@ apd : {A : Set} {B : A → Set} → (f : (x : A) → B x)
 apd f hxy = {!!}
 
 ```
+
+
+## Let's kick it up a notch!
+These are the practice problems from chapter 5 of Rijke's textbook.
+
+1. Show that the operation inverting identifications distributes over the
+concatenation operation, i.e., construct the following:
+```
+dist-inv-concat : {A : Set} {x y z : A} (p : x ≡ y) → (q : y ≡ z) → ( inv (concat p q) ≡ concat (inv q) (inv p))
+dist-inv-concat p q = {!!}
+```
+
+2. construct the following maps:
+```
+col-left : {A : Set} {w x y z : A} (p : x ≡ y) → (q : x ≡ y) → (r : w ≡ x) → (p ≡ q) → (concat r p ≡ concat r q)
+col-left p q r hpr = {!!}
+
+col-right : {A : Set} {w x y z : A} (p : w ≡ x) → (q : w ≡ x) → (r : x ≡ y) → (p ≡ q) → (concat p r ≡ concat q r)
+col-right p q r hpr = {!!}
+
+
+inv-con : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat  p q ≡ r) →  q ≡ concat (inv p) r
+inv-con p q r hpqr = {!!}
+
+con-inv : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat  p q ≡ r) →  p ≡ concat r (inv q)
+con-inv p q r hqpr = {!!}
+```
+
+3. Let `B: A → U ` be a family of types indexed by `A`, and consider an identification `p : a ≡ x` for `a, x : A`. Construct the following identification:
+```
+--hottLift : {A : Set} {B : A → Set} (a x : A) → (p : a ≡ x) → (b : B a) → ( )
+```
+In onther words, an identification `p : x ≡ y` in the *base type `A` lifts* to an identification in `Σ A B` for every element in `B x` analagous to the path lifting property for fibrations in homotopy theory.
+
+
+
+
+
+
+
