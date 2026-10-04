@@ -4,6 +4,10 @@ module test where
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
+data Path {A : Set} : A → A → Set₁ where
+  refl : (x : A) → Path {A} x x -- this is how equality is defined in agda. from now on we will use the symbol `≡` typed like "\==" or "\equiv".
+
+
 data Σ (A : Set) (B : A → Set) : Set where
     pair : (a : A) → (b : B a) → Σ A B
 
@@ -25,6 +29,15 @@ isprop A = (x y : A) → iscontr (x ≡ y)
 isset : (A : Set) → Set
 isset A = (x y : A) → isprop (x ≡ y)
 
+pathInd : {A : Set} {a : A} (motive : (x : A) → (p : a ≡ x) → Set) (base : motive a refl) → {b : A} → (p : a ≡ b) → motive b p
+pathInd motive base p = J motive p base
+
+
+-- J : {A : Set a} {x : A} (B : (y : A) → x ≡ y → Set b)
+--     {y : A} (p : x ≡ y) → B x refl → B y p
+-- J B refl b = b -- This is how path induction is naturally defined in agda
+
+
 app : {A B : Set} → {f : A → B} → {a a' : A} → a ≡ a' → f a ≡ f a'
 app refl = refl
 
@@ -43,6 +56,7 @@ infixr 30 _∘_
 _∘d_ : ∀ {A : Set} {B : A → Set} {C : (x : A) → B x → Set} → ((x : A) → (y : B x) → C x y) → (f : (x : A) → B x) → ((x : A) → C x (f x))
 (g ∘d f ) x = g x (f x)
 infixr 30 _∘d_
+
 
 ∘≡∘d : ∀ {A B C : Set} (g : B → C) (f : A → B) → g ∘ f ≡  (λ x y → g y) ∘d f
 ∘≡∘d {A} {B} {C} f g = refl
@@ -74,7 +88,7 @@ right-inv refl = refl
 
 -- application
 ap : {A B : Set} (f : A → B) → {x y : A} → x ≡ y → f x ≡ f y
-ap f refl = refl
+ap f refl = {!!}
 
     
 ap-id : {A : Set} {x y : A} (p : x ≡ y) → p ≡ ap (λ x → x) p
