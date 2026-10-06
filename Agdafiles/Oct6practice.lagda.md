@@ -19,7 +19,7 @@ over the elements of A. With the base point `x` as a parameter, we say that the 
 
 ```
 data Path {u} {A : Set u} (x : A) : A → Set u where 
-     refl : Path x x 
+    -- --  refl : Path x x 
 ```
 
 From now on we will use the symbol `≡` typed like

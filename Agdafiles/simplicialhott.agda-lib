@@ -1,4 +1,3 @@
 name: simplicialhott
-include: .
-depend: standard-library
+include: . standard-library/agda-stdlib/src
 flags: -WnoUnsupportedIndexedMatch
