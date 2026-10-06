@@ -169,25 +169,43 @@ dist-inv-concat p q = {!!}
 
 2. construct the following maps:
 ```
-col-left : {A : Set} {w x y z : A} (p : x ≡ y) → (q : x ≡ y) → (r : w ≡ x) → (p ≡ q) → (concat r p ≡ concat r q)
-col-left p q r hpr = {!!}
+con-left : {A : Set} {w x y z : A} (p : x ≡ y) → (q : x ≡ y) → (r : w ≡ x) → (p ≡ q) → (concat r p ≡ concat r q)
+con-left p q r hpr = {!!}
 
-col-right : {A : Set} {w x y z : A} (p : w ≡ x) → (q : w ≡ x) → (r : x ≡ y) → (p ≡ q) → (concat p r ≡ concat q r)
-col-right p q r hpr = {!!}
+con-right : {A : Set} {w x y z : A} (p : w ≡ x) → (q : w ≡ x) → (r : x ≡ y) → (p ≡ q) → (concat p r ≡ concat q r)
+con-right p q r hpr = {!!}
 
 
-inv-con : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat  p q ≡ r) →  q ≡ concat (inv p) r
+inv-con : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat p q ≡ r) →  q ≡ concat (inv p) r
 inv-con p q r hpqr = {!!}
 
-con-inv : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat  p q ≡ r) →  p ≡ concat r (inv q)
+con-inv : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat p q ≡ r) →  p ≡ concat r (inv q)
 con-inv p q r hqpr = {!!}
 ```
 
-3. Let `B: A → U ` be a family of types indexed by `A`, and consider an identification `p : a ≡ x` for `a, x : A`. Construct the following identification:
+4. Consider four identifications (a ≡ b ≡ c ≡ d ≡ e). Lets do a Mac Lane pentagon!
+a. Construct the five identifications:
 ```
---hottLift : {A : Set} {B : A → Set} (a x : A) → (p : a ≡ x) → (b : B a) → ( )
+alpha1 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat (concat p q) r) s) ≡ (concat (concat  p (concat q r)) s)
+alpha1 p q r s = {!!}
+
+alpha2 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat  p (concat q r)) s) ≡ (concat p (concat  (concat q r) s))
+alpha2 p q r s = {!!} 
+
+alpha3 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat p (concat  (concat q r) s)) ≡ ( concat p (concat q (concat r s)))
+alpha3 p q r s = {!!}
+
+alpha4 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat (concat p q) r) s) ≡ (concat (concat p q) (concat r s))
+alpha4 p q r s = {!!} 
+
+alpha5 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat p q) (concat r s)) ≡ ( concat p (concat q (concat r s)))
+alpha5 p q r s = {!!}
 ```
-In onther words, an identification `p : x ≡ y` in the *base type `A` lifts* to an identification in `Σ A B` for every element in `B x` analagous to the path lifting property for fibrations in homotopy theory.
+b. show the following:
+```
+--macLane : {A : Set} {a b c d e : A} {p :  a ≡ b} {q : b ≡ c} {r : c ≡ d} (s : d ≡ e) → ((concat (concat alpha1 alpha2) alpha3) ≡ (concat alpha4 alpha5))
+--macLane
+```
 
 
 
@@ -195,3 +213,7 @@ In onther words, an identification `p : x ≡ y` in the *base type `A` lifts* to
 
 
 
+```
+oops : {A : Set} (a b : A) (p q : a ≡ b) →(p ≡ q)
+oops a _ refl q = {!!} 
+```
