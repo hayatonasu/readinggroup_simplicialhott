@@ -93,8 +93,9 @@ Because of this, in this worksheet we will only use the function `pathInd` with 
 Transitivity:
 
 ```
-concat : {A : Set} → {x y z : A} → x ≡ y → y ≡ z → x ≡ z
-concat hxy hyz = {!!}
+infix 30 _⊚_
+_⊚_ : {A : Set} → {x y z : A} → x ≡ y → y ≡ z → x ≡ z
+_⊚_ hxy hyz = {!!}
 ```
 
 Symmetry:
@@ -108,35 +109,35 @@ Associator
 
 ```
 assoc : {A : Set} → {x y z w : A} (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
-    → concat (concat p q) r ≡ concat p (concat q r)
+    → (p ⊚ q) ⊚ r ≡ p ⊚ (q ⊚ r)
 assoc p q r = {!!}
 ```
 
 Left unitor
 
 ```
-left-unit : {A : Set} {x y : A} (p : x ≡ y) → concat refl p ≡ p
+left-unit : {A : Set} {x y : A} (p : x ≡ y) → refl ⊚ p ≡ p
 left-unit hxy = {!!}
 ```
 
 Right unitor
 
 ```
-right-unit : {A : Set} {x y : A} (p : x ≡ y) → concat p refl ≡ p
+right-unit : {A : Set} {x y : A} (p : x ≡ y) → p ⊚ refl ≡ p
 right-unit hxy = {!!}
 ```
 
 Left inverse(or)
 
 ```
-left-inv : {A : Set} {x y : A} (p : x ≡ y) → concat (inv p) p ≡ refl
+left-inv : {A : Set} {x y : A} (p : x ≡ y) → (inv p) ⊚ p ≡ refl
 left-inv hxy = {!!}
 ```
 
 Right inverse
 
 ```
-right-inv : {A : Set} {x y : A} (p : x ≡ y ) → concat p (inv p) ≡ refl
+right-inv : {A : Set} {x y : A} (p : x ≡ y ) → p ⊚ (inv p) ≡ refl
 right-inv hxy = {!!}
 ```
 
@@ -202,24 +203,24 @@ These are the practice problems from chapter 5 of Rijke's textbook.
 concatenation operation, i.e., construct the following:
 
 ```
-dist-inv-concat : {A : Set} {x y z : A} (p : x ≡ y) → (q : y ≡ z) → ( inv (concat p q) ≡ concat (inv q) (inv p))
+dist-inv-concat : {A : Set} {x y z : A} (p : x ≡ y) → (q : y ≡ z) → ( inv (p ⊚ q) ≡ (inv q) ⊚ (inv p))
 dist-inv-concat p q = {!!}
 ```
 
 2. construct the following maps:
 
 ```
-con-left : {A : Set} {w x y z : A} (p : x ≡ y) → (q : x ≡ y) → (r : w ≡ x) → (p ≡ q) → (concat r p ≡ concat r q)
+con-left : {A : Set} {w x y z : A} (p : x ≡ y) → (q : x ≡ y) → (r : w ≡ x) → (p ≡ q) → (r ⊚ p ≡ r ⊚ q)
 con-left p q r hpr = {!!}
 
-con-right : {A : Set} {w x y z : A} (p : w ≡ x) → (q : w ≡ x) → (r : x ≡ y) → (p ≡ q) → (concat p r ≡ concat q r)
+con-right : {A : Set} {w x y z : A} (p : w ≡ x) → (q : w ≡ x) → (r : x ≡ y) → (p ≡ q) → (p ⊚ r ≡ q ⊚ r)
 con-right p q r hpr = {!!}
 
 
-inv-con : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat p q ≡ r) →  q ≡ concat (inv p) r
+inv-con : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → (p ⊚ q ≡ r) →  q ≡ (inv p) ⊚ r
 inv-con p q r hpqr = {!!}
 
-con-inv : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → ( concat p q ≡ r) →  p ≡ concat r (inv q)
+con-inv : {A : Set} {w x y z : A} (p : x ≡ y) → (q : y ≡ z) → (r : x ≡ z) → (p ⊚ q ≡ r) →  p ≡ r ⊚ (inv q)
 con-inv p q r hqpr = {!!}
 ```
 
@@ -227,20 +228,20 @@ con-inv p q r hqpr = {!!}
 a. Construct the five identifications:
 
 ```
-alpha1 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat (concat p q) r) s) ≡ (concat (concat  p (concat q r)) s)
+alpha1 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (((p ⊚ q) ⊚ r) ⊚ s) ≡ ((p ⊚ (q ⊚ r)) ⊚ s)
 alpha1  p q r s = ap right_s (assoc p q r) -- extra variables added for clarity, not required in proof
   where
-    right_s = (λ x → concat x s) 
-alpha2 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat  p (concat q r)) s) ≡ (concat p (concat  (concat q r) s))
+    right_s = (λ x → x ⊚ s) 
+alpha2 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → ((p ⊚ (q ⊚ r)) ⊚ s) ≡ (p ⊚ ((q ⊚ r) ⊚ s))
 alpha2 p q r s = {!!}
 
-alpha3 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat p (concat  (concat q r) s)) ≡ ( concat p (concat q (concat r s)))
+alpha3 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (p ⊚ ((q ⊚ r) ⊚ s)) ≡ (p ⊚ (q ⊚ (r ⊚ s)))
 alpha3 p q r s = {!!}
 
-alpha4 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat (concat p q) r) s) ≡ (concat (concat p q) (concat r s))
+alpha4 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (((p ⊚ q) ⊚ r) ⊚ s) ≡ ((p ⊚ q) ⊚ (r ⊚ s))
 alpha4 p q r s = {!!}
 
-alpha5 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat p q) (concat r s)) ≡ ( concat p (concat q (concat r s)))
+alpha5 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → ((p ⊚ q) ⊚ (r ⊚ s)) ≡ (p ⊚ (q ⊚ (r ⊚ s)))
 alpha5 p q r s = {!!}
 ```
 
@@ -248,7 +249,7 @@ alpha5 p q r s = {!!}
 b. show the following:
 
 ```
-macLane : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → ((concat (concat (alpha1 p q r s) (alpha2 p q r s)) (alpha3 p q r s)) ≡ (concat (alpha4 p q r s) (alpha5 p q r s)))
+macLane : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → ((((alpha1 p q r s) ⊚ (alpha2 p q r s)) ⊚ (alpha3 p q r s)) ≡ ((alpha4 p q r s) ⊚ (alpha5 p q r s)))
 macLane p q r s = {!!}
 ```
 
