@@ -187,24 +187,27 @@ con-inv p q r hqpr = {!!}
 a. Construct the five identifications:
 ```
 alpha1 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat (concat p q) r) s) ≡ (concat (concat  p (concat q r)) s)
-alpha1 p q r s = {!!}
-
+alpha1  p q r s = ap right_s (assoc p q r) -- extra variables added for clarity, not required in proof
+  where
+    right_s = (λ x → concat x s) 
 alpha2 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat  p (concat q r)) s) ≡ (concat p (concat  (concat q r) s))
-alpha2 p q r s = {!!} 
+alpha2 p q r s = {!!}
 
 alpha3 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat p (concat  (concat q r) s)) ≡ ( concat p (concat q (concat r s)))
 alpha3 p q r s = {!!}
 
 alpha4 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat (concat p q) r) s) ≡ (concat (concat p q) (concat r s))
-alpha4 p q r s = {!!} 
+alpha4 p q r s = {!!}
 
 alpha5 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (concat (concat p q) (concat r s)) ≡ ( concat p (concat q (concat r s)))
 alpha5 p q r s = {!!}
 ```
+
+
 b. show the following:
 ```
---macLane : {A : Set} {a b c d e : A} {p :  a ≡ b} {q : b ≡ c} {r : c ≡ d} (s : d ≡ e) → ((concat (concat alpha1 alpha2) alpha3) ≡ (concat alpha4 alpha5))
---macLane
+macLane : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → ((concat (concat (alpha1 p q r s) (alpha2 p q r s)) (alpha3 p q r s)) ≡ (concat (alpha4 p q r s) (alpha5 p q r s)))
+macLane p q r s = {!!}
 ```
 
 
@@ -212,8 +215,8 @@ b. show the following:
 
 
 
-
+Try to prove this. what goes wrong? What error message does agda give you?
 ```
-oops : {A : Set} (a b : A) (p q : a ≡ b) →(p ≡ q)
-oops a _ refl q = {!!} 
+oops : {A : Set} {a b : A} (p q : a ≡ b) →(p ≡ q)
+oops p q = {!!}
 ```
