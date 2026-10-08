@@ -7,21 +7,24 @@
   := \ x → x
 ```
 
-A is contractible there exists x : A such that for any y : A we have x = y.
+A is contractible if there exists `a : A` such that for any `x : A` we have
+`a = x`.
 
 ```rzk
 #def iscontr (A : U)
   : U
   := Σ (a : A) , (x : A) → a =_{A} x
 ```
--- A is a proposition if for any x, y : A we have x = y
+
+A is a proposition if for any `x, y : A` we have `x = y`.
+
 ```rzk
 #def isaprop (A : U)
   : U
   := (x : A) → (y : A) → x =_{A} y
 ```
 
-A is a set if for any x, y : A the type x =_{A} y is a proposition
+A is a set if for any `x, y : A` the type `x =_{A} y` is a proposition.
 
 ```rzk
 #def isaset (A : U)
@@ -37,6 +40,6 @@ A is a set if for any x, y : A the type x =_{A} y is a proposition
 
 ```rzk
 #def app (A B : U) (f : A → B) (a a' : A)
-  : (a = a') → (f a = f a')
-  := \ p → idJ (A , a , \ x _ → f a = f x , refl , a' , p)
+  : ( a = a') → (f a = f a')
+  := \lambda -> ?
 ```
