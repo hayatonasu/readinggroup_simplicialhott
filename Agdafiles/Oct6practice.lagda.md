@@ -19,8 +19,11 @@ over the elements of A. With the base point `x` as a parameter, we say that the 
 
 ```
 data Path {u} {A : Set u} (x : A) : A → Set u where 
-     refl : Path x x 
+     refl : Path x x
 ```
+
+
+
 
 From now on we will use the symbol `≡` typed like
 "\==" or "\equiv".
@@ -31,7 +34,7 @@ What does this mean? It is complicated and will likely take a while to understan
 In Rijke's textbook, he gives the type of based path induction to be this:
 
 ```
-pathInd : {A : Set} {a : A} (motive : (x : A) → (p : a ≡ x) → Set) (base : motive a refl) → {b : A} → (p : a ≡ b) → motive b p
+pathInd : {u : Agda.Primitive.Level} {A : Set u} {a : A} (motive : (x : A) → (p : a ≡ x) → Set u) (base : motive a refl) → {b : A} → (p : a ≡ b) → motive b p
 ```
 
 we define the function as follows:
@@ -47,7 +50,7 @@ have laabeled the motive and the base explicitly, but this is not
 necessary.
 
 ```
-leibnitz : {a b : Set} → (f : a → b) → (a a' : a) → a ≡ a' → f a ≡ f a'
+leibnitz : {A B : Set} → (f : A → B) → (a a' : A) → a ≡ a' → f a ≡ f a'
 leibnitz f a a' = pathInd motive base -- the `{a}` in curly braces is included only so that we can refer to it in the definition. it does not need to be provided when using the function `app`.
   where
     motive = (λ x _ → f a ≡ f x) -- this is the function that takes x and a proof that a≡x and returns the type f a ≡ f x
@@ -95,50 +98,59 @@ Transitivity:
 ```
 infix 30 _⊚_
 _⊚_ : {A : Set} → {x y z : A} → x ≡ y → y ≡ z → x ≡ z
-_⊚_ hxy hyz = {!!}
+_⊚_ {_} {x} {y} {z} = pathInd m b 
+  where
+    m = (λ w hxw → (w ≡ z → x ≡ z)) -- goal is to prove this :)
+    b = (λ (p : x ≡ z) → p) -- map from `x ≡ z → x ≡ z`, just used id
+
+-- ⊚ \oo
+-- p : x ≡ y
+-- q : y ≡ z
+-- p ⊚ q : x ≡ z
 ```
 
 Symmetry:
 
 ```
 inv : {A : Set} {x y : A} → x ≡ y → y ≡ x
-inv hxy = {!!}
-```
-
-Associator
-
-```
-assoc : {A : Set} → {x y z w : A} (p : x ≡ y) (q : y ≡ z) (r : z ≡ w)
-    → (p ⊚ q) ⊚ r ≡ p ⊚ (q ⊚ r)
-assoc p q r = {!!}
+inv {A} {x} {y} = pathInd (λ y hxy → y ≡ x) refl
 ```
 
 Left unitor
 
 ```
 left-unit : {A : Set} {x y : A} (p : x ≡ y) → refl ⊚ p ≡ p
-left-unit hxy = {!!}
+left-unit _ = refl
 ```
 
 Right unitor
 
 ```
 right-unit : {A : Set} {x y : A} (p : x ≡ y) → p ⊚ refl ≡ p
-right-unit hxy = {!!}
+right-unit refl = refl
 ```
+
+Associator
+
+```
+assoc : {A : Set} {x y z w : A} (p : x ≡ y) → (q : y ≡ z) → (r : z ≡ w)
+    → (p ⊚ q) ⊚ r ≡ p ⊚ (q ⊚ r)
+assoc {A} {x} {y} {z} {w} p q r = pathInd ((λ (y : A) (p : x ≡ y) → ( ∀ q r → (p ⊚ q) ⊚ r ≡ p ⊚ (q ⊚ r)))) (λ q r → refl) p q r
+```
+
 
 Left inverse(or)
 
 ```
 left-inv : {A : Set} {x y : A} (p : x ≡ y) → (inv p) ⊚ p ≡ refl
-left-inv hxy = {!!}
+left-inv = pathInd (λ y pxy → (inv pxy) ⊚ pxy ≡ refl) refl
 ```
 
 Right inverse
 
 ```
 right-inv : {A : Set} {x y : A} (p : x ≡ y ) → p ⊚ (inv p) ≡ refl
-right-inv hxy = {!!}
+right-inv = pathInd (λ y p → p ⊚ (inv p) ≡ refl) refl
 ```
 
 Given the definition of the identity function `id`:
@@ -152,7 +164,7 @@ A path `p : x ≡ y` is equivalent to the path `ap id p : id x ≡ id y`:
 
 ```
 ap-id : {A : Set} {x y : A} (p : x ≡ y) → ( p ≡ ap id p )
-ap-id hxy = {!!}
+ap-id = pathInd (λ y p →  p ≡ ap id p ) refl
 ```
 
 Note that the output is not of type `Path {A}`, but of type `Path {Path {A}}`.
@@ -168,21 +180,24 @@ infixr 30 _∘_
 
 ap-comp : {A B C : Set} (f : A → B) → (g : B → C) → {x y : A} → (p : x ≡ y)
     → ap g (ap f p) ≡ ap (g ∘ f) p
-ap-comp f g hxy = {!!}
+ap-comp f g = pathInd (λ y p → ap g (ap f p) ≡ ap (g ∘ f) p) base
+  where
+    base : ap g (ap f refl) ≡ ap (g ∘ f) refl 
+    base = refl -- ap g (ap f refl) ≡ ap (g ∘ f) refl 
 ```
 
 This one looks familliar... can you see how it is different from `ap-id`?
 
 ```
 ap-inv : {A : Set} {x y : A} (p : x ≡ y) → inv p ≡ ap id (inv p)
-ap-inv hxy = {!!}
+ap-inv  = pathInd (λ y p → inv p ≡ ap id (inv p)) refl
 ```
 
 How should the transport function be defined? this takes an equivalence between elements in a type and gives a map between types with those indices.
 
 ```
 tr : {A : Set} {B : A → Set} {x y : A} → x ≡ y → B x → B y
-tr hxy b = {!!}
+tr {A} {B} {x} = pathInd (λ y p → B x → B y) id
 ```
 
 Dependent application of a function behaves as expected:
@@ -191,7 +206,7 @@ Dependent application of a function behaves as expected:
 apd : {A : Set} {B : A → Set} → (f : (x : A) → B x)
     → {x y : A} → (p : x ≡ y)
     → tr p (f x) ≡ f y
-apd f hxy = {!!}
+apd f {x} = pathInd (λ y p → tr p (f x) ≡ f y) refl 
 
 ```
 
@@ -203,8 +218,14 @@ These are the practice problems from chapter 5 of Rijke's textbook.
 concatenation operation, i.e., construct the following:
 
 ```
-dist-inv-concat : {A : Set} {x y z : A} (p : x ≡ y) → (q : y ≡ z) → ( inv (p ⊚ q) ≡ (inv q) ⊚ (inv p))
-dist-inv-concat p q = {!!}
+dist-inv-concat : {A : Set} {x y z : A} (p : x ≡ y) → (q : y ≡ z) → ( (inv (p ⊚ q)) ≡ ((inv q) ⊚ (inv p)))
+dist-inv-concat p refl = h1 ⊚ h2
+  where
+    h1 : inv (p ⊚ refl) ≡ inv p
+    h1 = ap inv (right-unit p)
+    h2 = refl
+
+-- (inv (p ⊚ q)) ≡ ((inv q) ⊚ (inv p))
 ```
 
 2. construct the following maps:
@@ -256,6 +277,7 @@ macLane p q r s = {!!}
 Try to prove this. what goes wrong? What error message does agda give you?
 
 ```
-oops : {A : Set} {a b : A} (p q : a ≡ b) →(p ≡ q)
-oops p q = {!!}
+-- oops : {A : Set} {a b : A} (p q : a ≡ b) → (p ≡ q)
+-- oops refl refl = {!!}
 ```
+
