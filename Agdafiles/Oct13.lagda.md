@@ -50,6 +50,9 @@ module _ {l} {A : Type l} where
 
     concat'-sym : {u v : A} → (p : u ≡ v) → concat' p p ≡ refl
     concat'-sym {u} {u} refl = refl
+
+    functorial-concat' : {u : A} {H : (x : A) → u ≡ x} → (v w : A) → (p : v ≡ w) → concat' {u} {v} {w} (H v) (H w) ≡ p
+    functorial-concat' {u} {H} v .v refl = concat'-sym (H v)
 ```
 
 ```
@@ -83,6 +86,8 @@ We do not know whether two proofs of equalities `a ≡ b` for `a  b: A` are the 
 However, some types are sets, and it is a property for a type to be a set.
 
 ### Contractible types
+    HoTT Book § 3.11, Rijke's book § 10
+
 ```
 record is-contr (A : Type l) : Type l where
     constructor _,_
@@ -116,6 +121,8 @@ is-contr-based-path A a = {!   !}
 In fact, this characterizes the path type up to equivalence (see the fundamental theorem).
 
 ### Propositions
+    HoTT Book § 3.2 - 3.6, Rijke's book  § 12.1, 12.2
+
 A propostion is a type such that if it has an element, it is contractible.
 We define  `is-prop` by the following form that is the easiest form to check.
 ```
@@ -152,14 +159,16 @@ module _ {A : Type l} where
     center (is--1-type←is-prop' H x y) = concat' (contraction (H x) x) (contraction (H x) y)
     contraction (is--1-type←is-prop' H x x) refl = concat'-sym (contraction (H x) x)
 
-    is-prop←is--1-typ : is--1-type A → is-prop A 
-    is-prop←is--1-typ H a b =  center (H a b) 
+    is-prop←is--1-type : is--1-type A → is-prop A 
+    is-prop←is--1-type H a b =  center (H a b) 
 
     is--1-type←is-prop : is-prop A → is--1-type A 
     center (is--1-type←is-prop H a b) = concat' (H a a) (H a b)
 --  wrong: center (is--1-type←is-prop H a b) = H a b
     contraction (is--1-type←is-prop H a a) refl = concat'-sym (H a a) 
 ```  
+
+
 
 ### Sets 
 A set is a type that for each pair of elements `(a , b)`, the identity type `a ≡ b` is a proposition.
@@ -206,6 +215,9 @@ Contractible types are propostions (-1-types).
 ``` 
 is--1-type-is-contr : {A : Type l} → is-contr A → is--1-type A
 is--1-type-is-contr {_} {A} is-contr-A = is--1-type←is-prop' (λ x → is-contr-A)
+
+is-prop-is-contr : {A : Type l} → is-contr A → is-prop A
+is-prop-is-contr = is-prop←is--1-type ∘ is--1-type-is-contr 
 ``` 
 
 Similarly, any k-type is a (k+1)-type, so we have a chain of subtypes `ContrType ⊆ Prop ⊆ Set ⊆ ⋯` of ` Type`.
@@ -364,12 +376,15 @@ FunExt {_} {_} {A} {B} = (f g : (x : A) → B x) → is-equiv (eval-apply f g)
 postulate
     funext : {A : Type l} {B : A → Type l'} → FunExt {_} {_} {A} {B}
 
+inv-funext : {A : Type l} {B : A → Type l'} (f g : (x : A) → B x) → ((x : A) → f x ≡ g x) → f ≡ g 
+inv-funext f g = section (fst (funext f g))
+
 WeakFunExt : {A : Type l} → {B : A → Type l'} → Type (l ⊔ l')
 WeakFunExt {_} {_} {A} {B} = ((x : A) → is-contr (B x)) → is-contr ( (x : A) → B x)
 
 weakfunext : {A : Type l} → {B : A → Type l'} → WeakFunExt {l} {l'} {A} {B}
 center (weakfunext {_} {_} {A} {B} H) = λ x → center (H x)
-contraction (weakfunext {_} {_} {A} {B} H) f = (section (fst (funext (λ x → center (H x)) f)) ) (λ x → contraction (H x) (f x))
+contraction (weakfunext {_} {_} {A} {B} H) f = (inv-funext (λ x → center (H x)) f) (λ x → contraction (H x) (f x))
 ```
 
 
@@ -378,7 +393,7 @@ contraction (weakfunext {_} {_} {A} {B} H) f = (section (fst (funext (λ x → c
 0. If `x : A ⊢ P x` is a proposition, `(x : A) → P x` is also a proposition.
 ``` 
 is-prop-function : {A : Type l} → {P : A → Type l'} → ((x : A) → is-prop (P x)) → is-prop ((x : A) → P x)
-is-prop-function H f g = (section (fst (funext f g))) (λ x → H x (f x) (g x))
+is-prop-function H f g = (inv-funext f g) (λ x → H x (f x) (g x))
 ```
 
 More generally, k-types are closed under function type: `A : Type` and ` x : A ⊢ B (x) : k-Type` ⇒ `Π A (λ x → B (x)) : k-Type`.
@@ -405,7 +420,7 @@ is-property-is-trunc-k {k} {A} = {!   !}
 ```
 
 2. If `x : A ⊢ P x` is a property and `A` is a (k+1)-type, then `Σ A (λ x → P x)` is a (k+1)-type. (This is false when k+1 is -2.)
-Such a type is called a subtype of `A`
+Such a type is called a subtype of `A`.
 ``` 
 is-trunc-subtype :  {A : Type l} {P : A → Type l'} {k : 𝕋} → is-trunc (succ-𝕋 k) A → is-trunc (succ-𝕋 k) (Σ A (λ x → P x))
 is-trunc-subtype {_} {_} {A} {P} { -2-𝕋} = {!   !}
@@ -418,6 +433,28 @@ The above properties imply that most of the `is-***`'s in the file are propositi
 is-property-has-section : {A B : Type l} {f : A → B} → is-prop (has-section f)
 is-property-has-section {A} {B} {f} = {!   !}
 ```
+
+
+3. `is-prop` is a property
+
+``` 
+-- This one does not require the function extensionality.
+is-set-is-prop : {A : Type l} → is-prop A → is-set A
+is-set-is-prop {_} {A} H a b = is-prop-is-contr (center-of-path a b , contraction-of-path a b)
+    where 
+    center-of-path : (x y : A) → x ≡ y
+    center-of-path x y = concat' (H a x) (H a y)
+    contraction-of-path : (x y : A) →  (p : x ≡ y) → center-of-path x y ≡ p
+    contraction-of-path x y p = functorial-concat' x y p 
+
+is-property-is-prop : {A : Type l} → is-prop (is-prop A)
+is-property-is-prop {_} {A} H K = (inv-funext H K) (λ x → (inv-funext (H x) (K x)) (homotopy x))
+    where 
+    homotopy : (x y : A) → H x y ≡ K x y
+    homotopy x y = is-set-is-prop H x y (H x y) (K x y)
+```
+
+Since `is-prop'` and `is--1-type` are propositions as well, all of them are truly equivalent, not just logically equivalent.
 
 ### The univalance axiom 
 Supose we define a mathematical structure, say magmas.
