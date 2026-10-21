@@ -112,10 +112,12 @@ A good example is the type of all paths from a fixed element.
 
 ```
 is-contr-based-path : (A : Type l) → (a : A) → is-contr (Σ A (λ x → a ≡ x))
-is-contr-based-path A a = {!   !}
-    -- where 
-    -- contraction-based-path : (t :  Σ A (λ x → a ≡ x)) → (a , refl) ≡ t 
-    -- contraction-based-path t = ?
+center (is-contr-based-path A a) = (a , refl)
+contraction (is-contr-based-path A a) = contraction-based-path
+    where 
+    contraction-based-path : (t :  Σ A (λ x → a ≡ x)) → (a , refl) ≡ t 
+    contraction-based-path (x , refl) = refl
+    
 ```
 
 In fact, this characterizes the path type up to equivalence (see the fundamental theorem).
@@ -168,8 +170,6 @@ module _ {A : Type l} where
     contraction (is--1-type←is-prop H a a) refl = concat'-sym (H a a) 
 ```  
 
-
-
 ### Sets 
 A set is a type that for each pair of elements `(a , b)`, the identity type `a ≡ b` is a proposition.
 
@@ -189,6 +189,10 @@ Set l = Σ (Type l) (λ A → is-set A)
 More generally, we can inductively define k-truncated types as follows.
 
 ``` 
+-- data ℕ : Type where
+--         zero : ℕ
+--         succ : ℕ → ℕ
+
 data 𝕋 : Type where
         -2-𝕋 : 𝕋
         succ-𝕋 : 𝕋 → 𝕋
@@ -224,7 +228,8 @@ Similarly, any k-type is a (k+1)-type, so we have a chain of subtypes `ContrType
 
 ```
 is-suc-k-type-is-k-type : {k : 𝕋} → {A : Type l} → is-trunc k A → is-trunc (succ-𝕋 k) A 
-is-suc-k-type-is-k-type {_} {k} {A} = {!   !}
+is-suc-k-type-is-k-type {_} { -2-𝕋} {A} = is--1-type-is-contr
+is-suc-k-type-is-k-type {_} {succ-𝕋 k} {A} H a b = is-suc-k-type-is-k-type (H a b)
 ```
 
 ## Homotopy and equivalence
@@ -367,8 +372,8 @@ Then, we need to prove two elements, say two functions, are equal.
 Proving that two functions are equal is hardly possible without *the function extentionality* axiom.
 
 ``` 
-eval-apply : {A : Type l} {B : A → Type l'} (f g : (x : A) → B x) → f ≡ g → (x : A) → f x ≡ g x 
-eval-apply = {!   !}
+eval-apply : {A : Type l} {B : A → Type l'} (f g : (x : A) → B x) → f ≡ g → f ~ g
+eval-apply f .f refl x = refl 
 
 FunExt : {l l' : Level} → {A : Type l} → {B : A → Type l'} → Type (l ⊔ l')
 FunExt {_} {_} {A} {B} = (f g : (x : A) → B x) → is-equiv (eval-apply f g)
