@@ -27,6 +27,11 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
 
+exclude_docs: |
+  agda/standard-library/
+  agda/_build/
+  *.agdai
+
 nav:
   - Home: index.md 
   - Rzk:
@@ -34,7 +39,7 @@ nav:
   - Agda: 
     - Oct 6 practice: agda/Oct6practice.lagda.md
     - Oct 13: agda/Oct13.lagda.md
-  - Github repo https://github.com/hayatonasu/readinggroup_simplicialhott
+
 
 extra_javascript:
   - javascript/mathjax.js
