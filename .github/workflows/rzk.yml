@@ -1,0 +1,15 @@
+name: Typecheck Rzk
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: rzk-lang/rzk-action@v1
+        with:
+          rzk-version: latest
