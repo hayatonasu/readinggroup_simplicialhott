@@ -1,4 +1,4 @@
-```
+```agda
 {-# OPTIONS --safe --without-K #-}
 module Oct6practice where
 ```
@@ -7,7 +7,7 @@ Below we are importing packages that give us the equality type in agda,
 along with many convenient features. The equality type in agda is
 given by `a ≡ b`, as we will see later.
 
-```
+```agda
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 ```
@@ -17,7 +17,7 @@ Here we give our own definition of the (based) equality type in
 agda. `Path {A} x : A \to Set` is actually a family of types, in this case indexed
 over the elements of A. With the base point `x` as a parameter, we say that the only constuctor of this type is `refl : Path x x`. 
 
-```
+```agda
 data Path {u} {A : Set u} (x : A) : A → Set u where 
      refl : Path x x
 ```
@@ -33,13 +33,13 @@ What does this mean? It is complicated and will likely take a while to understan
 ## Path induction
 In Rijke's textbook, he gives the type of based path induction to be this:
 
-```
+```agda
 pathInd : {u : Agda.Primitive.Level} {A : Set u} {a : A} (motive : (x : A) → (p : a ≡ x) → Set u) (base : motive a refl) → {b : A} → (p : a ≡ b) → motive b p
 ```
 
 we define the function as follows:
 
-```
+```agda
 pathInd motive base refl = base
 ```
 
@@ -49,7 +49,7 @@ Here is an example of proving something using path induction. We
 have laabeled the motive and the base explicitly, but this is not
 necessary.
 
-```
+```agda
 leibnitz : {A B : Set} → (f : A → B) → (a a' : A) → a ≡ a' → f a ≡ f a'
 leibnitz f a a' = pathInd motive base -- the `{a}` in curly braces is included only so that we can refer to it in the definition. it does not need to be provided when using the function `app`.
   where
@@ -63,7 +63,7 @@ that uses pattern matching on the constuctors of the type rather than
 using a recursor like `pathind`. the function below is the same as
 `leibnitz`, but uses pattern matching:
 
-```
+```agda
 ap : {A B : Set} (f : A → B) → {a a' : A} → a ≡ a' → f a ≡ f a'
 ap f {a} {a'} refl = ans -- The `refl` here refers to the type constructor of `Path`.
   where                -- It says, "assume that our element of `a ≡ a'` was constructed by `refl`. Because `refl: a ≡ a`, this presumes that `a` is definitionally equal to `a'`.
@@ -78,7 +78,7 @@ The fact that `refl` takes in no arguments is a consequence of us using the base
 
 Note that pattern matching is ridiculously powerful. It is so powerful that it can make definitions illegible. See the following example, and try to figure out what the definitions actually say:
 
-```
+```agda
 ex_concat : {A : Set} → {x y z : A} → x ≡ y → y ≡ z → x ≡ z
 ex_concat refl refl = refl
 
@@ -95,7 +95,7 @@ Because of this, in this worksheet we will only use the function `pathInd` with 
 
 Transitivity:
 
-```
+```agda
 infix 30 _⊚_
 _⊚_ : {A : Set} → {x y z : A} → x ≡ y → y ≡ z → x ≡ z
 _⊚_ {_} {x} {y} {z} = pathInd m b 
@@ -111,28 +111,28 @@ _⊚_ {_} {x} {y} {z} = pathInd m b
 
 Symmetry:
 
-```
+```agda
 inv : {A : Set} {x y : A} → x ≡ y → y ≡ x
 inv {A} {x} {y} = pathInd (λ y hxy → y ≡ x) refl
 ```
 
 Left unitor
 
-```
+```agda
 left-unit : {A : Set} {x y : A} (p : x ≡ y) → refl ⊚ p ≡ p
 left-unit _ = refl
 ```
 
 Right unitor
 
-```
+```agda
 right-unit : {A : Set} {x y : A} (p : x ≡ y) → p ⊚ refl ≡ p
 right-unit refl = refl
 ```
 
 Associator
 
-```
+```agda
 assoc : {A : Set} {x y z w : A} (p : x ≡ y) → (q : y ≡ z) → (r : z ≡ w)
     → (p ⊚ q) ⊚ r ≡ p ⊚ (q ⊚ r)
 assoc {A} {x} {y} {z} {w} p q r = pathInd ((λ (y : A) (p : x ≡ y) → ( ∀ q r → (p ⊚ q) ⊚ r ≡ p ⊚ (q ⊚ r)))) (λ q r → refl) p q r
@@ -141,28 +141,28 @@ assoc {A} {x} {y} {z} {w} p q r = pathInd ((λ (y : A) (p : x ≡ y) → ( ∀ q
 
 Left inverse(or)
 
-```
+```agda
 left-inv : {A : Set} {x y : A} (p : x ≡ y) → (inv p) ⊚ p ≡ refl
 left-inv = pathInd (λ y pxy → (inv pxy) ⊚ pxy ≡ refl) refl
 ```
 
 Right inverse
 
-```
+```agda
 right-inv : {A : Set} {x y : A} (p : x ≡ y ) → p ⊚ (inv p) ≡ refl
 right-inv = pathInd (λ y p → p ⊚ (inv p) ≡ refl) refl
 ```
 
 Given the definition of the identity function `id`:
 
-```
+```agda
 id : {A : Set} → A → A
 id = λ x → x
 ```
 
 A path `p : x ≡ y` is equivalent to the path `ap id p : id x ≡ id y`:
 
-```
+```agda
 ap-id : {A : Set} {x y : A} (p : x ≡ y) → ( p ≡ ap id p )
 ap-id = pathInd (λ y p →  p ≡ ap id p ) refl
 ```
@@ -172,7 +172,7 @@ Note that the output is not of type `Path {A}`, but of type `Path {Path {A}}`.
 
 Composition can be extracted as desired (first we define function composition with the notation `f∘g`):
 
-```
+```agda
 _∘_ : {A B : Set} → {C : B → Set} → ((y : B) → C y) → (f : A → B) → ((x : A) → C (f x))
 (g ∘ f ) x = g (f x)
 infixr 30 _∘_
@@ -188,21 +188,21 @@ ap-comp f g = pathInd (λ y p → ap g (ap f p) ≡ ap (g ∘ f) p) base
 
 This one looks familliar... can you see how it is different from `ap-id`?
 
-```
+```agda
 ap-inv : {A : Set} {x y : A} (p : x ≡ y) → inv p ≡ ap id (inv p)
 ap-inv  = pathInd (λ y p → inv p ≡ ap id (inv p)) refl
 ```
 
 How should the transport function be defined? this takes an equivalence between elements in a type and gives a map between types with those indices.
 
-```
+```agda
 tr : {A : Set} {B : A → Set} {x y : A} → x ≡ y → B x → B y
 tr {A} {B} {x} = pathInd (λ y p → B x → B y) id
 ```
 
 Dependent application of a function behaves as expected:
 
-```
+```agda
 apd : {A : Set} {B : A → Set} → (f : (x : A) → B x)
     → {x y : A} → (p : x ≡ y)
     → tr p (f x) ≡ f y
@@ -217,7 +217,7 @@ These are the practice problems from chapter 5 of Rijke's textbook.
 1. Show that the operation inverting identifications distributes over the
 concatenation operation, i.e., construct the following:
 
-```
+```agda
 dist-inv-concat : {A : Set} {x y z : A} (p : x ≡ y) → (q : y ≡ z) → ( (inv (p ⊚ q)) ≡ ((inv q) ⊚ (inv p)))
 dist-inv-concat p refl = h1 ⊚ h2
   where
@@ -230,7 +230,7 @@ dist-inv-concat p refl = h1 ⊚ h2
 
 2. construct the following maps:
 
-```
+```agda
 con-left : {A : Set} {w x y z : A} (p : x ≡ y) → (q : x ≡ y) → (r : w ≡ x) → (p ≡ q) → (r ⊚ p ≡ r ⊚ q)
 con-left p q r hpr = {!!}
 
@@ -248,7 +248,7 @@ con-inv p q r hqpr = {!!}
 4. Consider four identifications (a ≡ b ≡ c ≡ d ≡ e). Lets do a Mac Lane pentagon!
 a. Construct the five identifications:
 
-```
+```agda
 alpha1 : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → (((p ⊚ q) ⊚ r) ⊚ s) ≡ ((p ⊚ (q ⊚ r)) ⊚ s)
 alpha1  p q r s = ap right_s (assoc p q r) -- extra variables added for clarity, not required in proof
   where
@@ -269,14 +269,14 @@ alpha5 p q r s = {!!}
 
 b. show the following:
 
-```
+```agda
 macLane : {A : Set} {a b c d e : A} (p :  a ≡ b) → (q : b ≡ c) → (r : c ≡ d) → (s : d ≡ e) → ((((alpha1 p q r s) ⊚ (alpha2 p q r s)) ⊚ (alpha3 p q r s)) ≡ ((alpha4 p q r s) ⊚ (alpha5 p q r s)))
 macLane p q r s = {!!}
 ```
 
 Try to prove this. what goes wrong? What error message does agda give you?
 
-```
+```agda
 -- oops : {A : Set} {a b : A} (p q : a ≡ b) → (p ≡ q)
 -- oops refl refl = {!!}
 ```

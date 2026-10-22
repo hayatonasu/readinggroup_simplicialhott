@@ -1,4 +1,4 @@
-```
+```agda
 {-# OPTIONS --without-K --no-import-sorts #-}
 module Oct13 where
 open import Agda.Builtin.Equality
@@ -19,7 +19,7 @@ Acknowledgement: I used claude to resolve some errors and make the first version
 
 We have learned path induction:
 
-```
+```agda
 pathInd : {A : Type} {a : A} (motive : (x : A) → (p : a ≡ x) → Type) (base : motive a refl) → {b : A} → (p : a ≡ b) → motive b p
 pathInd motive base refl = base
 ```
@@ -28,7 +28,7 @@ and that it automatically induces higher coherences.
 
 ### Preliminary
 
-``` 
+```agda
 transpose : {l l' : Level} {A : Type l} {B : A → Type l'} → {a a' : A} → a ≡ a' → B a → B a' 
 transpose {_} {_} {A} {B} {a} {a} refl = λ x → x
 
@@ -55,7 +55,7 @@ module _ {l} {A : Type l} where
     functorial-concat' {u} {H} v .v refl = concat'-sym (H v)
 ```
 
-```
+```agda
 variable 
     l l' l'' : Level
 ```
@@ -88,7 +88,7 @@ However, some types are sets, and it is a property for a type to be a set.
 ### Contractible types
     HoTT Book § 3.11, Rijke's book § 10
 
-```
+```agda
 record is-contr (A : Type l) : Type l where
     constructor _,_
     field 
@@ -98,7 +98,7 @@ open is-contr
 ```
 
 I used [`record`](https://agda.readthedocs.io/en/latest/language/record-types.html), but this is the same thing as 
-```
+```agda
 -- is-contr : (A : Type l) → Type l 
 -- is-contr A = Σ A (λ a → (x : A) → a ≡ x)
 
@@ -110,7 +110,7 @@ I decided to use `record` for readablity.
 A good example is the type of all paths from a fixed element. 
 (cf. the coYoneda `∫ᶜ C(x,c) ≅ 1`.)
 
-```
+```agda
 is-contr-based-path : (A : Type l) → (a : A) → is-contr (Σ A (λ x → a ≡ x))
 center (is-contr-based-path A a) = (a , refl)
 contraction (is-contr-based-path A a) = contraction-based-path
@@ -127,7 +127,7 @@ In fact, this characterizes the path type up to equivalence (see the fundamental
 
 A propostion is a type such that if it has an element, it is contractible.
 We define  `is-prop` by the following form that is the easiest form to check.
-```
+```agda
 is-prop : Type l → Type l
 is-prop A = (a b : A) → a ≡ b
 
@@ -139,7 +139,7 @@ Moral: if any two elements must be the same, any element becomes a center of con
 
 There are alternative definitions of being a proposition, which will turn out to be equivalent.
 
-``` 
+```agda
 is--1-type : Type l → Type l
 is--1-type A = (a b : A) → is-contr (a ≡ b)
 
@@ -150,7 +150,7 @@ is-prop' A = A → is-contr A
 #### Exercise --- Equivalences of different definitions of propositions 
 ([Copatterns](https://agda.readthedocs.io/en/latest/language/copatterns.html) are useful when you define a function *into* an record type, not *from* one. You can do this by `Ctrl+c Ctrl+c` and press `Enter` without entering a variable.)
 
-``` 
+```agda
 module _ {A : Type l} where 
 
     is-prop'←is--1-type :  is--1-type A → is-prop' A
@@ -173,7 +173,7 @@ module _ {A : Type l} where
 ### Sets 
 A set is a type that for each pair of elements `(a , b)`, the identity type `a ≡ b` is a proposition.
 
-```
+```agda
 is-set : Type l → Type l 
 is-set A = (a b : A) → is-prop (a ≡ b)
 
@@ -188,7 +188,7 @@ Set l = Σ (Type l) (λ A → is-set A)
 
 More generally, we can inductively define k-truncated types as follows.
 
-``` 
+```agda
 -- data ℕ : Type where
 --         zero : ℕ
 --         succ : ℕ → ℕ
@@ -216,7 +216,7 @@ Truncated-Type {l} k = Σ (Type l) (λ A → is-trunc k A)
 
 Contractible types are propostions (-1-types).
 
-``` 
+```agda
 is--1-type-is-contr : {A : Type l} → is-contr A → is--1-type A
 is--1-type-is-contr {_} {A} is-contr-A = is--1-type←is-prop' (λ x → is-contr-A)
 
@@ -226,7 +226,7 @@ is-prop-is-contr = is-prop←is--1-type ∘ is--1-type-is-contr
 
 Similarly, any k-type is a (k+1)-type, so we have a chain of subtypes `ContrType ⊆ Prop ⊆ Set ⊆ ⋯` of ` Type`.
 
-```
+```agda
 is-suc-k-type-is-k-type : {k : 𝕋} → {A : Type l} → is-trunc k A → is-trunc (succ-𝕋 k) A 
 is-suc-k-type-is-k-type {_} { -2-𝕋} {A} = is--1-type-is-contr
 is-suc-k-type-is-k-type {_} {succ-𝕋 k} {A} H a b = is-suc-k-type-is-k-type (H a b)
@@ -235,14 +235,14 @@ is-suc-k-type-is-k-type {_} {succ-𝕋 k} {A} H a b = is-suc-k-type-is-k-type (H
 ## Homotopy and equivalence
 
 ### Homotopy 
-```
+```agda
 infix 6 _~_
 _~_ : {A : Type l} {B : A → Type l'} → (f g : (x : A) → B x) → Type (l ⊔ l') 
 _~_ {_} {_} {A} {_} f g = (x : A) → f x ≡ g x
 ```
 
 This makes `Type` a (∞,1)-category.
-``` 
+```agda
 refl-homotopy : {A : Type l} {B : A → Type l'} → (f : (x : A) → B x) → f ~ f 
 refl-homotopy f = λ x → refl
 ```
@@ -250,7 +250,7 @@ refl-homotopy f = λ x → refl
 ### Equivalence (HoTT Book Chapter 4, Rijke's textbook §9)
 An equivalence is one of the correct notions of sameness between types.
 
-``` 
+```agda
 record has-section {A : Type l} {B : Type l'} (f : A → B) : Type (l ⊔ l') where 
     field
         section : B → A 
@@ -272,7 +272,7 @@ _≃_ A B = Σ (A → B) (λ f → is-equiv f)
 ```
 
 #### Exercise --- ≃ is an equivalence relation 
-```
+```agda
 refl-≃ : (A : Type l) → A ≃ A 
 refl-≃ A = {!   !}
 
@@ -285,7 +285,7 @@ trans-≃ = {!   !}
 
 #### Remark --- having an inverse is not the right notion!
 One could define an inverse of a function as follows.
-``` 
+```agda
 has-inverse : ∀ {A B : Type (lsuc l)} (f : A → B) → Type (lsuc l) 
 has-inverse {_} {A} {B} f = Σ (B → A) (λ f^-1 → (f ∘ f^-1 ~ id) × (f^-1 ∘ f ~ id))
 ```
@@ -294,7 +294,7 @@ However, this is not equivlaent to `is-equiv` (even with the univalence axiom), 
 
 Two types are called *logically equivalent* if there are functions between them in both directions.
 
-``` 
+```agda
 _↔_ : (A : Type l) (B : Type l') → Type (l ⊔ l') 
 _↔_ A B = (A → B) × (B → A)
 ```
@@ -305,7 +305,7 @@ This notion of equivalence is much weaker than equivalence of types, but suffice
 2. `is-equiv f` is a proposition, while `has-inverse f` is not.
 
 #### Exercise --- `is-equiv f` is a proposition 
-``` 
+```agda
 module _ (A B : Type l) (f : A → B) where 
     is--1-type-has-section : is--1-type (has-section f)
     is--1-type-has-section = {!   !}
@@ -313,7 +313,7 @@ module _ (A B : Type l) (f : A → B) where
 
 ### Contractible maps 
 Another equivalent definition is 
-``` 
+```agda
 record Fib {A : Type l} {B : Type l'} (f : A → B) (b : B) : Type (l ⊔ l') where 
     field 
         fiber : A 
@@ -324,7 +324,7 @@ is-contr-map : {A : Type l} {B : Type l'} (f : A → B) → Type (l ⊔ l')
 is-contr-map {B = B} f = (y : B) → is-contr (Fib f y)
 ```
 
-``` 
+```agda
 module _ {A B : Type l} (f : A → B) where
 
     is-contr-map-is-equiv : is-equiv f → is-contr-map f 
@@ -339,7 +339,7 @@ module _ {A B : Type l} (f : A → B) where
 For a family `x : A ⊢ B x` with a family of maps `f : (x : A) → a ≡ x → B x`, every `f x` is an equivalence if the total space `Σ A B` is contractible.
 This is a characterization of path types: `is-contr-based-path` says that `Σ A (λ x → a ≡ x)` is contractible.
 
-```
+```agda
 module _ {A : Type l} {B : A → Type l'} where
 
     -- the map induced on total spaces
@@ -371,7 +371,7 @@ Suppose we want to prove a given type, which is often constructed with function 
 Then, we need to prove two elements, say two functions, are equal.
 Proving that two functions are equal is hardly possible without *the function extentionality* axiom.
 
-``` 
+```agda
 eval-apply : {A : Type l} {B : A → Type l'} (f g : (x : A) → B x) → f ≡ g → f ~ g
 eval-apply f .f refl x = refl 
 
@@ -396,21 +396,21 @@ contraction (weakfunext {_} {_} {A} {B} H) f = (inv-funext (λ x → center (H x
 #### Exercise --- examples of usage of the function extentionality
 
 0. If `x : A ⊢ P x` is a proposition, `(x : A) → P x` is also a proposition.
-``` 
+```agda
 is-prop-function : {A : Type l} → {P : A → Type l'} → ((x : A) → is-prop (P x)) → is-prop ((x : A) → P x)
 is-prop-function H f g = (inv-funext f g) (λ x → H x (f x) (g x))
 ```
 
 More generally, k-types are closed under function type: `A : Type` and ` x : A ⊢ B (x) : k-Type` ⇒ `Π A (λ x → B (x)) : k-Type`.
 
-``` 
+```agda
 is-k-type-function-into-k-type : {A : Type l} → {B : A → Type l'} (k : 𝕋) → ((x : A) → is-trunc k (B x)) → is-trunc k ( (x : A) → B x)
 is-k-type-function-into-k-type -2-𝕋 = weakfunext
 is-k-type-function-into-k-type (succ-𝕋 k) h f g = {!   !}
 ```
 
 1. `is-contr` is a propery.
-```
+```agda
 is-property-is-contr : {A : Type l} → is-prop (is-contr A) 
 is-property-is-contr {l} {A} (c , H) (d , K) = component-wise-equality-is-contr c d H K {!   !} {!   !}
     where 
@@ -419,14 +419,14 @@ is-property-is-contr {l} {A} (c , H) (d , K) = component-wise-equality-is-contr 
 ```
 
 More generally, `is-trunc k` is a property.
-```
+```agda
 is-property-is-trunc-k : {k : 𝕋} {A : Type l} → is-prop (is-trunc k A)
 is-property-is-trunc-k {k} {A} = {!   !}
 ```
 
 2. If `x : A ⊢ P x` is a property and `A` is a (k+1)-type, then `Σ A (λ x → P x)` is a (k+1)-type. (This is false when k+1 is -2.)
 Such a type is called a subtype of `A`.
-``` 
+```agda
 is-trunc-subtype :  {A : Type l} {P : A → Type l'} {k : 𝕋} → is-trunc (succ-𝕋 k) A → is-trunc (succ-𝕋 k) (Σ A (λ x → P x))
 is-trunc-subtype {_} {_} {A} {P} { -2-𝕋} = {!   !}
 is-trunc-subtype {_} {_} {A} {P} {succ-𝕋 k} = {!   !}
@@ -434,7 +434,7 @@ is-trunc-subtype {_} {_} {A} {P} {succ-𝕋 k} = {!   !}
 ```
 
 The above properties imply that most of the `is-***`'s in the file are propositions.
-```
+```agda
 is-property-has-section : {A B : Type l} {f : A → B} → is-prop (has-section f)
 is-property-has-section {A} {B} {f} = {!   !}
 ```
@@ -442,7 +442,7 @@ is-property-has-section {A} {B} {f} = {!   !}
 
 3. `is-prop` is a property
 
-``` 
+```agda
 -- This one does not require the function extensionality.
 is-set-is-prop : {A : Type l} → is-prop A → is-set A
 is-set-is-prop {_} {A} H a b = is-prop-is-contr (center-of-path a b , contraction-of-path a b)
@@ -464,7 +464,7 @@ Since `is-prop'` and `is--1-type` are propositions as well, all of them are trul
 ### The univalance axiom 
 Supose we define a mathematical structure, say magmas.
 
-```
+```agda
 record Magma (l : Level) : Type (lsuc l) where 
     field 
         carrier : Type l 
@@ -475,7 +475,7 @@ open Magma
 
 Then, one would define morphisms between them. 
 
-``` 
+```agda
 record Hom-Magma {l : Level} (X Y : Magma l) : Type l where
     private 
         module X = Magma X
@@ -487,7 +487,7 @@ open Hom-Magma
 ```
 
 That gives us the notion of isomorphisms.
-``` 
+```agda
 record _≅_ {l : Level} (X Y : Magma l) : Type l where
     field 
         forward : Hom-Magma X Y 
@@ -509,7 +509,7 @@ This is basically what the structure identity principle means:
 > identity of structured types is equivalent to structure-preserving equivalence (HoTT Book)
 
 We ask the universe of types to admit this kind of identification.
-```
+```agda
 equiv←eq : {A B : Type l} → A ≡ B → A ≃ B
 equiv←eq {_} {A} {.A} refl = refl-≃ A
 
@@ -526,7 +526,7 @@ The univalence axiom implies the function extensionality.
 One useful template to prove SIP is the following.
 
 1. Every magma is isomorphic to itself, so path induction gives a map from paths to isomorphisms.
-```
+```agda
 id-Hom-Magma : (X : Magma l) → Hom-Magma X X
 id-Hom-Magma X = {!   !}
 
@@ -541,7 +541,7 @@ id-≅ X = {!   !}
 It remains to show that the total space of `≅` is contractible.
 This is where the univalence axiom (and the function extensionality) is used.
 
-```
+```agda
 module _ {l : Level} where
 
     is-contr-total-≅ : (X : Magma l) → is-contr (Σ (Magma l) (λ Y → X ≅ Y))

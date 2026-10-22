@@ -1,4 +1,6 @@
 site_name: Simplicial HoTT reading group
+repo_url: https://github.com/hayatonasu/readinggroup_simplicialhott
+repo_name: hayatonasu/readinggroup_simplicialhott
 
 plugins:
   - rzk
@@ -29,7 +31,10 @@ nav:
   - Home: index.md 
   - Rzk:
     - Test: rzk/test.rzk.md
-    - GitHub: https://github.com/hayatonasu/readinggroup_simplicialhott
+  - Agda: 
+    - Oct 6 practice: agda/Oct6practice.lagda.md
+    - Oct 13: agda/Oct13.lagda.md
+  - Github repo https://github.com/hayatonasu/readinggroup_simplicialhott
 
 extra_javascript:
   - javascript/mathjax.js

@@ -23,28 +23,21 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs mkdocs-material mkdocs-plugin-rzk pygments-rzk
-
-      - name: Install rzk
-        env:
-          RZK_VERSION: v0.11.3
-        run: |
-          mkdir -p "$HOME/.local/bin"
-          curl -sSfL "https://github.com/rzk-lang/rzk/releases/download/${RZK_VERSION}/rzk-${RZK_VERSION}-Linux-X64.tar.gz" \
-            | tar -xz -C "$HOME/.local/bin" rzk
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          "$HOME/.local/bin/rzk" version
+          pip install mkdocs mkdocs-material mkdocs-plugin-rzk
+          pip install ./Rzkfiles/pygments-rzk
 
       - name: Build site
-        run: mkdocs build 
+        working-directory: Rzkfiles
+        run: mkdocs build -f mkdocs.yaml
 
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: site
+          path: Rzkfiles/site
 
   deploy:
     needs: build
