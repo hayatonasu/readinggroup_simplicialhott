@@ -22,8 +22,14 @@ markdown_extensions:
   - footnotes
   - toc:
       permalink: true
+  - pymdownx.arithmatex:
+      generic: true
 
-
+nav:
+  - Home: index.md 
+  - Rzk:
+    - Test: rzk/test.rzk.md
+    - GitHub: https://github.com/hayatonasu/readinggroup_simplicialhott
 
 extra_javascript:
   - javascript/mathjax.js
