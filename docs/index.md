@@ -19,6 +19,7 @@ Even though I put this website public, the reading group is for Dalhousie Univer
 - Oct 13: Truncation levels, univalence. (Hayato) [notes](agda/Oct13.lagda.md)
 - Oct 20: Quasicategories. (Tanner) [notes](seminarnotes/Oct20_Tanner_Type_Theory_Quasicategory_Presentation.pdf)
 
+- Nov 17th: The interval formulation (Hayato) [abstract](seminarnotes/Nov17.md)
 
 
 ## Formalization
