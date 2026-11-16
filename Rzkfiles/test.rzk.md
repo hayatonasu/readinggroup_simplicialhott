@@ -41,5 +41,5 @@ A is a set if for any `x, y : A` the type `x =_{A} y` is a proposition.
 ```rzk
 #def app (A B : U) (f : A → B) (a a' : A)
   : ( a = a') → (f a = f a')
-  := \lambda -> ?
+  := ?
 ```
